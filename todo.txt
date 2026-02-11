@@ -1,0 +1,4 @@
+1. Initialize Flask Server, and get this running locally
+2. Create Backend Functions for Fretboard Mapping
+3. Test locally
+4. Setup Env to run on external server
