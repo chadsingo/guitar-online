@@ -3,12 +3,17 @@ from notes import notes, notes_accidentals_flats, notes_accidentals_sharps, chro
 
 
 
-
+# Works if tuning is passed in this order 6-5-4-3-2-1
+# Returned fretboard is in order 6-5-4-3-2-1
 def build_fretboard(tuning, frets, accidental):
-    return
+    fretboard = []
+    for open_note in tuning:
+        fretboard.append(build_string(open_note, frets, accidental))
 
-('A', 'A#/Bb', 'B', 'C', 'C#/Db', 'D', 'D#/Eb', 'E', 'F', 'F#/Gb', 'G', 'G#/Ab')
-def build_string(open_note, frets, style):
+    return fretboard
+
+# ('A', 'A#/Bb', 'B', 'C', 'C#/Db', 'D', 'D#/Eb', 'E', 'F', 'F#/Gb', 'G', 'G#/Ab')
+def build_string(open_note, frets, accidental):
     string = [open_note]
     pointer = chromatic_scale[open_note]
     accidental_indicies = [1,4,6,9,11]
@@ -16,21 +21,21 @@ def build_string(open_note, frets, style):
     while len(string) <= frets:
         note = chromatic_scale[pointer]
 
-        if style == 'Flats' and pointer in accidental_indicies:
+        if accidental == 'Flats' and pointer in accidental_indicies:
             string.append(chromatic_scale[pointer].split('/')[1])
 
-        elif style == 'Sharps' and pointer in accidental_indicies:
+        elif accidental == 'Sharps' and pointer in accidental_indicies:
             string.append(chromatic_scale[pointer].split('/')[0])
 
-        elif pointer in accidental_indicies:
+        elif pointer in accidental_indicies: #This can likely go, but the organization is helpful for clarity
             string.append(chromatic_scale[pointer])
-
         else:
             string.append(note)
+
         pointer += 1
         pointer %= 12
 
-    return None
+    return string
 # Tuning in order string 6-5-4-3-2-1
 # Shows Shaps by default
 def build_fretboard_sharps(tuning):
