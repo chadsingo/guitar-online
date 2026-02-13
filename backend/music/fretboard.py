@@ -38,13 +38,6 @@ def build_string(open_note, frets, accidental):
     return string
 
 
-
-
-
-
-
-
-
 # Coordinate pair to search fretboard
 def get_note_at(fretboard, string, fret):
     return []
@@ -52,3 +45,52 @@ def get_note_at(fretboard, string, fret):
 
 
 
+
+
+
+
+'''
+Test Suite
+('A', 'A#/Bb', 'B', 'C', 'C#/Db', 'D', 'D#/Eb', 'E', 'F', 'F#/Gb', 'G', 'G#/Ab')
+'''
+def build_string_test1():
+    frets = 22
+    open_note = 'E'
+    accidental = 'Sharp'
+
+    actual = build_string()
+    expected = ['E', 'F', 'F#', 'G', 'G#','A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#','A', 'A#', 'B', 'C', 'C#', 'D']
+
+    return actual == expected
+
+
+def build_string_test2():
+    frets = 22
+    open_note = 'D'
+    accidental = 'Sharp'
+
+    actual = build_string()
+    expected = ['D', 'D#', 'E', 'F', 'F#', 'G', 'G#','A', 'A#', 'B', 'C', 'C#', 'D', 'D#','E', 'F', 'F#', 'G', 'G#','A', 'A#', 'B', 'C']
+
+    return actual == expected
+
+def build_string_test3():
+    frets = 22
+    open_note = 'E'
+    accidental = 'Flat'
+
+    actual = build_string()
+    expected = ['E', 'F', 'Gb', 'G', 'Ab','A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab','A', 'Bb', 'B', 'C', 'Db', 'D']
+
+    return actual == expected
+
+
+
+def main():
+    print(build_string_test1)
+    print(build_string_test2)
+    print(build_string_test3)
+
+
+if __name__ == "__main__":
+    main()
