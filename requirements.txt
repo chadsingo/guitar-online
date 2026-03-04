@@ -1,1 +1,4 @@
 flask
+psychopg
+python-dotenv
+bcrypt
