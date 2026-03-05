@@ -14,6 +14,8 @@ def login(request : Request):
     password_col = 3        # Database column with password stored. This is done to avoid hardcoding in case of a database restructure.
 
     data = request.get_json()
+    if not data or 'username' not in data or 'password' not in data:
+        return make_response('Bad Request', 400)
 
     username = data['username']
     username = html.escape(username)
@@ -39,7 +41,7 @@ def login(request : Request):
         hashed_token = hashlib.sha256(auth_token.encode()).hexdigest()
 
         curr.execute(
-            'UPDATE users SET auth_token = %s WHERE id = %s'
+            'UPDATE users SET auth_token = %s WHERE username = %s',
             (hashed_token, username)
         )
 

@@ -14,6 +14,8 @@ load_dotenv()
 def create_account(request : Request):
 
     data = request.get_json()
+    if not data or 'username' not in data or 'password' not in data or 'email' not in data:
+        return make_response('Bad Request', 400)
 
     username = data['username']
     username = html.escape(username)
