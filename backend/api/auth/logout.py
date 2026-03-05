@@ -23,23 +23,15 @@ def logout(request : Request):
 
     conn = connect(os.getenv('DATABASE_URL'))
     curr = conn.cursor()
-
-
-    curr.execute(
-        'SELECT * FROM users WHERE auth_token = %s',
-        (hashed_token,)
-    )
-
-    row = curr.fetchone()
-    if not row:
-        return make_response('Bad Request', 400)
     
 
-    username = row[1]
     curr.execute(
-        'UPDATE users set auth_token = NULL WHERE username = %s',
-        (username,)
+        'UPDATE users set auth_token = NULL WHERE auth_token = %s',
+        (hashed_token,)
     )
+    
+    if curr.rowcount == 0:
+        return make_response('Bad Request', 400)
 
     conn.commit()
     curr.close()
