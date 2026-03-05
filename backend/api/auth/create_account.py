@@ -7,7 +7,7 @@ import bcrypt
 import secrets
 import hashlib
 
-from psycopg import *
+from psycopg import connect, errors
 
 load_dotenv()
 
@@ -20,40 +20,31 @@ def create_account(request : Request):
     password = data['password']
     email = data['email']
 
+    if not validate_password(password):
+        return make_response('Invalid Password', 400)
+
     conn = connect(os.getenv('DATABASE_URL'))
     curr = conn.cursor()
 
-    curr.execute(
-        """SELECT 
-        username = %s AS username_exists, email = %s AS email_exists 
-        FROM users WHERE username = %s OR email = %s
-        """,
-        (username, email, username, email)
+
+    
+    try:
+        curr.execute(
+            'INSERT INTO users (username, email, hashed_pw) VALUES (%s, %s, %s)', 
+            (username, email, bcrypt.hashpw(password.encode(), bcrypt.gensalt()))
         )
-    
-    row = curr.fetchone()
+        conn.commit()
 
-    if row:
-        username_exists, email_exists = row
 
-        if username_exists:
-            conn.close()
-            return make_response(400, 'Username already exists')
-        if email_exists:
-            conn.close()
-            return make_response(400, 'Email already exists')
-        
+    except errors.UniqueViolation as e:
+        if e.diag.constraint_name == 'unique_username' :
+            return make_response('Username already exists', 400)
+        elif e.diag.constraint_name == 'unique_email':
+            return make_response('Email already exists', 400)
+        else:
+            return make_response('Error Creating Account', 400)
+    finally:
+        curr.close()
+        conn.close()
 
-    if not validate_password(password):
-        return make_response('Invalid Password', 400)
-    
-    curr.execute(
-        'INSERT INTO users (username, email, hashed_pw) VALUES (%s, %s, %s)', 
-        (username, email, bcrypt.hashpw(password.encode(), bcrypt.gensalt()))
-    )
-    
-    conn.commit()
-    curr.close()
-    conn.close()
-
-    return make_response()
+    return make_response({'message': 'Account Created Sucessfully'}, 201)

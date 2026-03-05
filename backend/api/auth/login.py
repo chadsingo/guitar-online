@@ -1,6 +1,5 @@
 from flask import *
 import html
-import validate_password
 from dotenv import load_dotenv
 import os
 import bcrypt
@@ -12,23 +11,49 @@ load_dotenv()
 
 
 def login(request : Request):
+    password_col = 3        # Database column with password stored. This is done to avoid hardcoding in case of a database restructure.
 
     data = request.get_json()
 
     username = data['username']
     username = html.escape(username)
-    password = data['password']
+    password = data['password'].encode()
 
     conn = connect(os.getenv('DATABASE_URL'))
     curr = conn.cursor()
 
     curr.execute(
-        'SELECT * FROM users WHERE username = %s', (username)
+        'SELECT * FROM users WHERE username = %s', (username,)
     )
     row = curr.fetchone()
 
     if not row:
-        return make_response(400, 'Bad Request', 'Incorrect Username or Password')
+        return make_response('Bad Request', 'Incorrect Username or Password', 400)
+    
+    hashed_pw = row[password_col]
 
+    check = bcrypt.checkpw(password, hashed_pw)
 
-    return make_response()
+    if check:
+        auth_token = secrets.token_hex()
+        hashed_token = hashlib.sha256(auth_token.encode()).hexdigest()
+
+        curr.execute(
+            'UPDATE users SET auth_token = %s WHERE id = %s'
+            (hashed_token, username)
+        )
+
+        conn.commit()
+        curr.close()
+        conn.close()
+
+        res = make_response()
+        res.set_cookie('auth_token', auth_token, httponly=True, secure=True, samesite="Strict", )
+        # res.headers['X-Content-Type-Options'] = 'nosniff'
+
+        return res
+    else:
+        curr.close()
+        conn.close()
+
+        return make_response('Bad Request', 'Incorrect Username or Password', 400)

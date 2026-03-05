@@ -1,7 +1,7 @@
 from flask import *
 
 
-from backend.api.auth import create_account
+from backend.api.auth import create_account, login
 '''
 To run, use *flask run*
 Later, this command will need to be different in order for the server to be reachable
@@ -27,4 +27,9 @@ def register():
 @app.route('/register_data', methods = ['POST'])
 def register_new():
     response = create_account(request)
+    return response
+
+@app.route('/login', methods = ['POST'])
+def user_login():
+    response = login(request)
     return response
