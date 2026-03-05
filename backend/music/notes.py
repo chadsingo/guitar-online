@@ -1,14 +1,14 @@
-# Tuples generally represent data that shouldnt change
+# Tuples generally represent data that shouldnt change, but they're harder to access in the way I need.
 
-notes = ('A', 'B', 'C', 'D', 'E', 'F', 'G')
+notes = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
 
 # Indexes represent identical notes, even though for example A# and Bb are written differently
 # This logic may need to change for scales to make sure each letter is used once
-notes_accidentals_sharps = ('A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#')
-notes_accidentals_flats = ('A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab')
+notes_accidentals_sharps = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']
+notes_accidentals_flats = ['A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab']
 
 # Combines the sharps and flats into one scale
-chromatic_scale = ('A', 'A#/Bb', 'B', 'C', 'C#/Db', 'D', 'D#/Eb', 'E', 'F', 'F#/Gb', 'G', 'G#/Ab')
+chromatic_scale = ['A', 'A#/Bb', 'B', 'C', 'C#/Db', 'D', 'D#/Eb', 'E', 'F', 'F#/Gb', 'G', 'G#/Ab']
 
 
 
