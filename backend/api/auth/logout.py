@@ -5,7 +5,7 @@ import os
 import bcrypt
 import secrets
 import hashlib
-from psycopg import *
+from psycopg2 import *
 
 load_dotenv()
 
@@ -16,7 +16,7 @@ def logout(request : Request):
     data = request.get_json()
 
     if not data or 'auth_token' not in data:
-        return make_response('Bad Request', 400)
+        return jsonify({'message': 'Bad Request'}), 400
 
     auth_token = data['auth_token']
     hashed_token = hashlib.sha256(auth_token.encode()).hexdigest()
@@ -31,13 +31,14 @@ def logout(request : Request):
     )
     
     if curr.rowcount == 0:
-        return make_response('Bad Request', 400)
+        return jsonify({'message': 'Bad Request'}), 400
 
     conn.commit()
     curr.close()
     conn.close()
 
     res = make_response('Found', 302)
+    res.set_cookie(auth_token, '', max_age=0)
     res.headers['Location'] = '/'
 
     return res

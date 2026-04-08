@@ -5,17 +5,18 @@ import os
 import bcrypt
 import secrets
 import hashlib
-from psycopg import *
+from psycopg2 import *
 
 load_dotenv()
 
 
 def login(request : Request):
+    prod = False
     password_col = 3        # Database column with password stored. This is done to avoid hardcoding in case of a database restructure.
 
     data = request.get_json()
     if not data or 'username' not in data or 'password' not in data:
-        return make_response('Bad Request', 400)
+        return jsonify({"error": "Bad Request"}), 400
 
     username = data['username']
     username = html.escape(username)
@@ -30,8 +31,8 @@ def login(request : Request):
     row = curr.fetchone()
 
     if not row:
-        return make_response('Bad Request', 'Incorrect Username or Password', 400)
-    
+        return jsonify({"error": "Bad Request", 'message': 'Incorrect Username or Password'}), 400
+        
     hashed_pw = row[password_col]
 
     check = bcrypt.checkpw(password, hashed_pw)
@@ -49,13 +50,13 @@ def login(request : Request):
         curr.close()
         conn.close()
 
-        res = make_response()
-        res.set_cookie('auth_token', auth_token, httponly=True, secure=True, samesite="Strict", )
+        res = make_response(jsonify({"message": "Login successful"}))
+        res.set_cookie('auth_token', auth_token, max_age=604800)
+        # res.set_cookie('auth_token', auth_token, httponly=True, secure= prod, samesite="Strict", max_age=604800)
         # res.headers['X-Content-Type-Options'] = 'nosniff'
 
         return res
     else:
         curr.close()
         conn.close()
-
-        return make_response('Bad Request', 'Incorrect Username or Password', 400)
+        return jsonify({'error': 'Bad Request', 'message': 'Incorrect Username or Password'}), 400
