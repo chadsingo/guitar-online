@@ -2,5 +2,6 @@ body {
     margin: 0;
     font-family: sans-serif;
     min-height: 100vh;
-    background: linear-gradient(270deg, #25253c, #3a2364);
+    background-color: rgb(197, 188, 203);
+    /* background: linear-gradient(270deg, #25253c, #3a2364); */
 }
